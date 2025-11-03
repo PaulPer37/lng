@@ -140,3 +140,5 @@ def t_COMMENT_MULTI(t):
     pass
 
 t_ignore = ' \t\r'
+
+lexer = lex.lex()
