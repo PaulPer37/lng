@@ -127,3 +127,16 @@ def t_ID(t):
     r"[a-zA-Z_][a-zA-Z0-9_]*"
     t.type = reserved.get(t.value, "ID")
     return t
+
+# Paul Perdomo
+def t_COMMENT_SINGLE(t):
+    r'//[^\n]*'
+    t.lexer.lineno += 1
+    pass
+
+def t_COMMENT_MULTI(t):
+    r'/\\*[\\s\\S]*?\\*/'
+    t.lexer.lineno += t.value.count('\\n')
+    pass
+
+t_ignore = ' \t\r'
