@@ -98,18 +98,16 @@ string_escape = r'(\\.|[^"\\])*'
 char_escape = r"(\\.|[^'\\])"
 
 
+@lex.TOKEN(r'"' + string_escape + r'"')
 def t_STRING(t):
-    r'"' + string_escape + r'"'
+    # devuelve contenido sin comillas
     t.value = t.value[1:-1]
     return t
 
-
+@lex.TOKEN(r"'" + char_escape + r"'")
 def t_CHAR(t):
-    r"'" + char_escape + r"'"
-    inner = t.value[1:-1]
-    t.value = inner
+    t.value = t.value[1:-1]
     return t
-
 
 def t_FLOAT(t):
     r"([0-9]+\.[0-9]+)"
@@ -141,7 +139,6 @@ def t_COMMENT_MULTI(t):
 
 t_ignore = ' \t\r'
 
-lexer = lex.lex()
 # Danilo Drouet
 def t_newline(t):
     r'\n+'
@@ -153,17 +150,3 @@ def t_error(t):
 
 lexer = lex.lex()
 
-if _name_ == '_main_':
-    import sys
-    data = sys.stdin.read() if not sys.stdin.isatty() else """
-let mut x = 10;
-let y = 3.14;
-fn suma(a: i32, b: i32) -> i32 { return a + b; }
-// comentario de linea
-/* comentario
-multilinea */
-println!("hola", x);
-"""
-    lexer.input(data)
-    for tok in lexer:
-        print(tok)
