@@ -142,3 +142,28 @@ def t_COMMENT_MULTI(t):
 t_ignore = ' \t\r'
 
 lexer = lex.lex()
+# Danilo Drouet
+def t_newline(t):
+    r'\n+'
+    t.lexer.lineno += t.value.count("\n")
+
+def t_error(t):
+    print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
+    t.lexer.skip(1)
+
+lexer = lex.lex()
+
+if _name_ == '_main_':
+    import sys
+    data = sys.stdin.read() if not sys.stdin.isatty() else """
+let mut x = 10;
+let y = 3.14;
+fn suma(a: i32, b: i32) -> i32 { return a + b; }
+// comentario de linea
+/* comentario
+multilinea */
+println!("hola", x);
+"""
+    lexer.input(data)
+    for tok in lexer:
+        print(tok)
