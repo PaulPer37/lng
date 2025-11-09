@@ -55,6 +55,7 @@ tokens = [
     "LBRACKET",
     "RBRACKET",
     "COLON",
+    "PERIOD",
 ] + list(reserved.values())
 
 t_PLUS = r"\+"
@@ -93,6 +94,7 @@ t_RPAREN = r"\)"
 t_LBRACKET = r"\["
 t_RBRACKET = r"\]"
 t_COLON = r":"
+t_PERIOD = r"\."
 
 string_escape = r'(\\.|[^"\\])*'
 char_escape = r"(\\.|[^'\\])"
@@ -104,10 +106,12 @@ def t_STRING(t):
     t.value = t.value[1:-1]
     return t
 
+
 @lex.TOKEN(r"'" + char_escape + r"'")
 def t_CHAR(t):
     t.value = t.value[1:-1]
     return t
+
 
 def t_FLOAT(t):
     r"([0-9]+\.[0-9]+)"
@@ -126,27 +130,32 @@ def t_ID(t):
     t.type = reserved.get(t.value, "ID")
     return t
 
+
 # Paul Perdomo
 def t_COMMENT_SINGLE(t):
-    r'//[^\n]*'
+    r"//[^\n]*"
     t.lexer.lineno += 1
     pass
 
+
 def t_COMMENT_MULTI(t):
-    r'/\\*[\\s\\S]*?\\*/'
-    t.lexer.lineno += t.value.count('\\n')
+    r"/\*[\s\S]*?\*/"
+    t.lexer.lineno += t.value.count("\\n")
     pass
 
-t_ignore = ' \t\r'
+
+t_ignore = " \t\r"
+
 
 # Danilo Drouet
 def t_newline(t):
-    r'\n+'
+    r"\n+"
     t.lexer.lineno += t.value.count("\n")
+
 
 def t_error(t):
     print(f"Illegal character '{t.value[0]}' at line {t.lexer.lineno}")
     t.lexer.skip(1)
 
-lexer = lex.lex()
 
+lexer = lex.lex()

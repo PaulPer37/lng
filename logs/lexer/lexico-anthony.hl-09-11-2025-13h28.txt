@@ -1,0 +1,39 @@
+LEXICO LOG - file: algoritmo1.rs
+Generated: 2025-11-09T13:28:07.176699
+User: anthony.hl
+============================================================
+
+TOKENS
+------------------------------------------------------------
+LINE    3 | TYPE: LET          | POS:     20 | VALUE: 'let'
+LINE    3 | TYPE: ID           | POS:     24 | VALUE: 'x'
+LINE    3 | TYPE: ASSIGN       | POS:     26 | VALUE: '='
+LINE    3 | TYPE: INTEGER      | POS:     28 | VALUE: 10
+LINE    7 | TYPE: LET          | POS:     59 | VALUE: 'let'
+LINE    7 | TYPE: ID           | POS:     63 | VALUE: 'x'
+LINE    7 | TYPE: COLON        | POS:     64 | VALUE: ':'
+LINE    7 | TYPE: ASSIGN       | POS:     66 | VALUE: '='
+LINE    7 | TYPE: INTEGER      | POS:     68 | VALUE: 10
+LINE    7 | TYPE: SEMICOLON    | POS:     70 | VALUE: ';'
+LINE   11 | TYPE: LET          | POS:    105 | VALUE: 'let'
+LINE   11 | TYPE: ID           | POS:    109 | VALUE: 'x'
+LINE   11 | TYPE: ASSIGN       | POS:    111 | VALUE: '='
+LINE   11 | TYPE: SEMICOLON    | POS:    113 | VALUE: ';'
+LINE   15 | TYPE: LET          | POS:    131 | VALUE: 'let'
+LINE   15 | TYPE: MUT          | POS:    135 | VALUE: 'mut'
+LINE   15 | TYPE: MUT          | POS:    139 | VALUE: 'mut'
+LINE   15 | TYPE: ID           | POS:    143 | VALUE: 'x'
+LINE   15 | TYPE: ASSIGN       | POS:    145 | VALUE: '='
+LINE   15 | TYPE: INTEGER      | POS:    147 | VALUE: 10
+LINE   15 | TYPE: SEMICOLON    | POS:    149 | VALUE: ';'
+LINE   19 | TYPE: MUT          | POS:    171 | VALUE: 'mut'
+LINE   19 | TYPE: ID           | POS:    175 | VALUE: 'x'
+LINE   19 | TYPE: ASSIGN       | POS:    177 | VALUE: '='
+LINE   19 | TYPE: INTEGER      | POS:    179 | VALUE: 10
+LINE   19 | TYPE: SEMICOLON    | POS:    181 | VALUE: ';'
+
+------------------------------------------------------------
+
+ERRORS / LEXER OUTPUT
+------------------------------------------------------------
+No errors reported by lexer (t_error did not print anything).

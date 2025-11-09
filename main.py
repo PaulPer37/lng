@@ -13,29 +13,23 @@ from datetime import datetime
 import getpass
 import contextlib
 from io import StringIO
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, "src")
+
 if SRC not in sys.path:
     sys.path.insert(0, SRC)
 
-import lexer as lexmod 
+import lexer as lexmod
+import parser as parsemod
+import utils
 
 ALG = "algoritmo1.rs"
-LOGS_DIR = "logs"
 
-def make_log_name(user):
-    now = datetime.now()
-    return f"lexico-{user}-{now.day:02d}-{now.month:02d}-{now.year}-{now.hour:02d}h{now.minute:02d}.txt"
 
-def main():
-    if not os.path.isfile(ALG):
-        print(f"Test file not found: {ALG}")
-        return
-
-    with open(ALG, "r", encoding="utf-8") as f:
-        src = f.read()
+def run_lexer_analysis(src, user):
+    """Ejecuta análisis léxico y genera log"""
     lexmod.lexer.lineno = 1
-
     err_capture = StringIO()
     tokens = []
 
@@ -44,34 +38,78 @@ def main():
         for tok in lexmod.lexer:
             tokens.append(tok)
 
-    os.makedirs(LOGS_DIR, exist_ok=True)
+    # Usar utilidad centralizada para guardar log
+    logpath = utils.save_lexer_log(user, tokens, err_capture.getvalue(), ALG)
+    print(f"✓ Lexer log written: {logpath}")
+
+    return tokens, err_capture.getvalue()
+
+
+def run_parser_analysis(src, user):
+    """Ejecuta análisis sintáctico y genera AST"""
+    print("\n" + "=" * 60)
+    print("INICIANDO ANÁLISIS SINTÁCTICO")
+    print("=" * 60)
+
+    ast, errors = parsemod.parse_code(src)
+
+    # Guardar log usando utilidad centralizada
+    logpath = utils.save_syntax_log(user, errors)
+
+    if not errors:
+        print("✓ Código analizado correctamente")
+        print("\nAST generado:")
+        print(ast)
+    else:
+        print(f"✗ Se encontraron {len(errors)} errores sintácticos")
+        for err in errors:
+            print(f"  - {err}")
+
+    print(f"\n✓ Parser log written: {logpath}")
+    return ast, errors
+
+
+def main():
+    if not os.path.isfile(ALG):
+        print(f"Test file not found: {ALG}")
+        return
+
+    with open(ALG, "r", encoding="utf-8") as f:
+        src = f.read()
+
     user = getpass.getuser() or "anon"
     user = user.replace(" ", "_")
-    logname = make_log_name(user)
-    logpath = os.path.join(LOGS_DIR, logname)
 
-    with open(logpath, "w", encoding="utf-8") as lg:
-        lg.write(f"LEXICO LOG - file: {ALG}\n")
-        lg.write(f"Generated: {datetime.now().isoformat()}\n")
-        lg.write(f"User: {user}\n")
-        lg.write("=" * 60 + "\n\n")
-        lg.write("TOKENS\n")
-        lg.write("-" * 60 + "\n")
-        if tokens:
-            for t in tokens:
-                lg.write(f"LINE {t.lineno:4d} | TYPE: {t.type:12s} | POS: {t.lexpos:6d} | VALUE: {repr(t.value)}\n")
-        else:
-            lg.write("No tokens recognized.\n")
-        lg.write("\n" + "-" * 60 + "\n\n")
-        lg.write("ERRORS / LEXER OUTPUT\n")
-        lg.write("-" * 60 + "\n")
-        errors_text = err_capture.getvalue()
-        if errors_text.strip():
-            lg.write(errors_text)
-        else:
-            lg.write("No errors reported by lexer (t_error did not print anything).\n")
+    print("=" * 60)
+    print("RUST ANALYZER - COMPILADOR")
+    print("=" * 60)
+    print(f"Archivo: {ALG}")
+    print(f"Usuario: {user}")
+    print(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    print("=" * 60)
 
-    print(f"Log written: {logpath}")
+    # FASE 1: Análisis Léxico
+    print("\n[FASE 1] Análisis Léxico")
+    print("-" * 60)
+    tokens, lex_errors = run_lexer_analysis(src, user)
+    print(f"Tokens reconocidos: {len(tokens)}")
+
+    # FASE 2: Análisis Sintáctico
+    print("\n[FASE 2] Análisis Sintáctico")
+    print("-" * 60)
+    ast, syntax_errors = run_parser_analysis(src, user)
+
+    # RESUMEN FINAL
+    print("\n" + "=" * 60)
+    print("RESUMEN DE ANÁLISIS")
+    print("=" * 60)
+    print(f"Tokens léxicos: {len(tokens)}")
+    print(f"Errores léxicos: {'Sí' if lex_errors.strip() else 'No'}")
+    print(f"Errores sintácticos: {len(syntax_errors)}")
+    print(f"AST generado: {'Sí' if ast and not syntax_errors else 'No'}")
+    print("=" * 60)
+
 
 if __name__ == "__main__":
+    # Ejecución normal del analizador completo
     main()
