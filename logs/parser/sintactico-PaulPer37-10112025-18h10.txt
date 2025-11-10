@@ -1,0 +1,11 @@
+=== LOG DE ANÁLISIS SINTÁCTICO ===
+Usuario: PaulPer37
+Fecha: 10/11/2025
+Hora: 18:10:51
+Total de errores: 1
+==================================================
+
+1. Error de sintaxis en línea 115, posición 1129: token inesperado '='
+
+==================================================
+Análisis completado exitosamente.
