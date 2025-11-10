@@ -192,3 +192,116 @@ def parse_code(code):
     result = parser.parse(code, lexer=lexer)
 
     return result, syntax_errors
+# ESTRUCTURAS DE CONTROL - FOR - Danilo Drouet
+# ============================================================================
+def p_for_statement(p):
+    """for_statement : FOR ID IN range_expression block
+    | FOR ID IN expression block"""
+    p[0] = ("for", p[2], p[4], p[5])
+
+
+def p_range_expression(p):
+    """range_expression : expression PERIOD PERIOD expression"""
+    p[0] = ("range", p[1], p[4])
+
+
+# ============================================================================
+# BLOQUE DE CÓDIGO - Danilo Drouet
+# ============================================================================
+def p_block(p):
+    """block : LBRACE statement_list RBRACE
+    | LBRACE RBRACE"""
+    if len(p) == 4:
+        p[0] = ("block", p[2])
+    else:
+        p[0] = ("block", [])
+
+
+# ============================================================================
+# DECLARACIÓN DE FUNCIONES - Danilo Drouet
+# ============================================================================
+def p_function_declaration(p):
+    """function_declaration : FN ID LPAREN parameter_list RPAREN block
+    | FN ID LPAREN parameter_list RPAREN ARROW type_annotation block
+    | FN ID LPAREN RPAREN block
+    | FN ID LPAREN RPAREN ARROW type_annotation block"""
+
+    # fn name() { ... } - 6 elementos: FN ID ( ) block
+    if len(p) == 6:
+        p[0] = ("func_decl", p[2], [], None, p[5])
+
+    # fn name(params) { ... } - 7 elementos: FN ID ( params ) block
+    elif len(p) == 7:
+        p[0] = ("func_decl", p[2], p[4], None, p[6])
+
+    # fn name() -> type { ... } - 8 elementos: FN ID ( ) -> type block
+    elif len(p) == 8:
+        p[0] = ("func_decl", p[2], [], p[6], p[7])
+
+    # fn name(params) -> type { ... } - 9 elementos: FN ID ( params ) -> type block
+    else:  # len(p) == 9
+        p[0] = ("func_decl", p[2], p[4], p[7], p[8])
+
+
+def p_parameter_list(p):
+    """parameter_list : parameter_list COMMA parameter
+    | parameter"""
+    if len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    else:
+        p[0] = [p[1]]
+
+
+def p_parameter(p):
+    """parameter : ID COLON type_annotation"""
+    p[0] = ("param", p[1], p[3])
+
+
+# ============================================================================
+# LLAMADA A FUNCIÓN - Danilo Drouet
+# ============================================================================
+def p_function_call(p):
+    """function_call : ID LPAREN argument_list RPAREN
+    | ID LPAREN RPAREN"""
+    if len(p) == 5:
+        p[0] = ("func_call", p[1], p[3])
+    else:
+        p[0] = ("func_call", p[1], [])
+
+
+def p_argument_list(p):
+    """argument_list : expression_list"""
+    p[0] = p[1]
+
+
+# ============================================================================
+# RETURN - Danilo Drouet
+# ============================================================================
+def p_return_statement(p):
+    """return_statement : RETURN expression SEMICOLON
+    | RETURN SEMICOLON"""
+    if len(p) == 4:
+        p[0] = ("return", p[2])
+    else:
+        p[0] = ("return", None)
+
+
+# ============================================================================
+# BREAK Y CONTINUE - Danilo Drouet
+# ============================================================================
+def p_break_statement(p):
+    """break_statement : BREAK SEMICOLON"""
+    p[0] = ("break",)
+
+
+def p_continue_statement(p):
+    """continue_statement : CONTINUE SEMICOLON"""
+    p[0] = ("continue",)
+
+
+# ============================================================================
+# REGLA VACÍA - Danilo Drouet
+# ============================================================================
+def p_empty(p):
+    """empty :"""
+    pass
