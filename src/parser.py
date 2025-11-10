@@ -169,29 +169,119 @@ def p_expression_boolean(p):
     else:
         p[0] = ("unop", p[1], p[2])
 
+# EXPRESIONES PRIMARIAS - Paul Perdomo
+def p_expression_primary(p):
+    """expression : INTEGER
+    | FLOAT
+    | STRING
+    | CHAR
+    | TRUE
+    | FALSE
+    | ID
+    | array_access
+    | tuple_access
+    | function_call
+    | vector_literal
+    | array_literal
+    | tuple_literal
+    | LPAREN expression RPAREN"""
+    if len(p) == 2:
+        if isinstance(p[1], tuple):
+            p[0] = p[1]
+        else:
+            p[0] = ("literal", p[1])
+    else:
+        p[0] = p[2]
 
-# MANEJO DE ERRORES SINTÁCTICOS - Anthony Herrera
-def p_error(p):
-    error_msg = f"Error de sintaxis en línea {p.lineno}, posición {p.lexpos}: token inesperado '{p.value}'"
-    syntax_errors.append(error_msg)
-    parser.errok()
+
+def p_expression_statement(p):
+    """expression_statement : expression SEMICOLON"""
+    p[0] = ("expr_stmt", p[1])
+# ESTRUCTURAS DE DATOS - Paul Perdomo (Vector)
+def p_vector_literal(p):
+    """vector_literal : VEC NOT LBRACKET expression_list RBRACKET
+    | VEC NOT LBRACKET RBRACKET"""
+    if len(p) == 6:
+        p[0] = ("vector", p[4])
+    else:
+        p[0] = ("vector", [])
 
 
-parser = yacc.yacc()
+def p_expression_list(p):
+    """expression_list : expression_list COMMA expression
+    | expression"""
+    if len(p) == 4:
+        p[0] = p[1] + [p[3]]
+    else:
+        p[0] = [p[1]]
+
+# ESTRUCTURAS DE DATOS - Paul Perdomo (Array)
+def p_array_literal(p):
+    """array_literal : LBRACKET expression_list RBRACKET
+    | LBRACKET RBRACKET"""
+    if len(p) == 4:
+        p[0] = ("array", p[2])
+    else:
+        p[0] = ("array", [])
 
 
-def parse_code(code):
-    """
-    Analiza el código y retorna el AST y los errores
-    """
-    from lexer import lexer
+def p_array_access(p):
+    """array_access : ID LBRACKET expression RBRACKET
+    | array_access LBRACKET expression RBRACKET"""
+    p[0] = ("array_access", p[1], p[3])
 
-    global syntax_errors
-    syntax_errors = []
+# ESTRUCTURAS DE DATOS - Paul Perdomo (Tupla)
 
-    result = parser.parse(code, lexer=lexer)
+def p_tuple_literal(p):
+    """tuple_literal : LPAREN expression_list COMMA RPAREN
+    | LPAREN expression COMMA expression RPAREN"""
+    if len(p) == 5:
+        p[0] = ("tuple", p[2])
+    else:
+        p[0] = ("tuple", [p[2], p[4]])
 
-    return result, syntax_errors
+
+def p_tuple_access(p):
+    """tuple_access : ID PERIOD INTEGER"""
+    p[0] = ("tuple_access", p[1], p[3])
+
+
+# IMPRESIÓN - Paul Perdomo
+def p_print_statement(p):
+    """print_statement : PRINT NOT LPAREN print_args RPAREN SEMICOLON
+    | PRINTLN NOT LPAREN print_args RPAREN SEMICOLON
+    | PRINT LPAREN print_args RPAREN SEMICOLON
+    | PRINTLN LPAREN print_args RPAREN SEMICOLON"""
+    if len(p) == 7:
+        # Con NOT (!) - es macro de Rust
+        p[0] = ("print", p[1], p[4], True)
+    else:
+        # Sin NOT - es función normal
+        p[0] = ("print", p[1], p[3], False)
+
+
+def p_print_args(p):
+    """print_args : expression_list
+    | empty"""
+    p[0] = p[1] if p[1] else []
+
+# ESTRUCTURAS DE CONTROL - IF/ELSE - Paul Perdomo
+def p_if_statement(p):
+    """if_statement : IF expression block
+    | IF expression block ELSE block
+    | IF expression block ELSE if_statement"""
+    if len(p) == 4:
+        p[0] = ("if", p[2], p[3], None)
+    else:
+        p[0] = ("if", p[2], p[3], p[5])
+
+# ESTRUCTURAS DE CONTROL - WHILE - Paul Perdomo
+
+def p_while_statement(p):
+    """while_statement : WHILE expression block"""
+    p[0] = ("while", p[2], p[3])
+
+
 # ESTRUCTURAS DE CONTROL - FOR - Danilo Drouet
 # ============================================================================
 def p_for_statement(p):
@@ -305,3 +395,26 @@ def p_continue_statement(p):
 def p_empty(p):
     """empty :"""
     pass
+
+# MANEJO DE ERRORES SINTÁCTICOS - Anthony Herrera
+def p_error(p):
+    error_msg = f"Error de sintaxis en línea {p.lineno}, posición {p.lexpos}: token inesperado '{p.value}'"
+    syntax_errors.append(error_msg)
+    parser.errok()
+
+
+parser = yacc.yacc()
+
+
+def parse_code(code):
+    """
+    Analiza el código y retorna el AST y los errores
+    """
+    from lexer import lexer
+
+    global syntax_errors
+    syntax_errors = []
+
+    result = parser.parse(code, lexer=lexer)
+
+    return result, syntax_errors
