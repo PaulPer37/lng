@@ -1,0 +1,14 @@
+=== LOG DE ANÁLISIS SINTÁCTICO ===
+Usuario: anthony.hl
+Fecha: 10/11/2025
+Hora: 22:33:11
+Total de errores: 4
+==================================================
+
+1. Error de sintaxis en línea 17, columna 12: token inesperado '='
+2. Error de sintaxis en línea 19, columna 18: token inesperado ';'
+3. Error de sintaxis en línea 26, columna 9: token inesperado 'let'
+4. Error de sintaxis en línea 34, columna 13: token inesperado '!'
+
+==================================================
+Análisis completado exitosamente.

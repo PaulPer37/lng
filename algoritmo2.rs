@@ -14,16 +14,16 @@ fn multiplicar(a: i32, b: i32) -> i32 {
 }
 
 fn dividir(a: i32, b: i32) -> i32 {
-    if b == 0 {
+    if b === 0 {
         println!("Error: División por cero");
-        return 0;
+        return 0;;
     } else {
         return a / b;
     }
 }
 
 fn main() {
-    let x = 10;
+    let let x = 10;
     let y = 5;
     
     let suma_result = sumar(x, y);
@@ -31,7 +31,7 @@ fn main() {
     let mult_result = multiplicar(x, y);
     let div_result = dividir(x, y);
     
-    println!("Suma:", suma_result);
+    println!!("Suma:", suma_result);
     println!("Resta:", resta_result);
     println!("Multiplicación:", mult_result);
     println!("División:", div_result);

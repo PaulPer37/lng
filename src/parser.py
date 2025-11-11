@@ -169,6 +169,7 @@ def p_expression_boolean(p):
     else:
         p[0] = ("unop", p[1], p[2])
 
+
 # EXPRESIONES PRIMARIAS - Paul Perdomo
 def p_expression_primary(p):
     """expression : INTEGER
@@ -197,6 +198,8 @@ def p_expression_primary(p):
 def p_expression_statement(p):
     """expression_statement : expression SEMICOLON"""
     p[0] = ("expr_stmt", p[1])
+
+
 # ESTRUCTURAS DE DATOS - Paul Perdomo (Vector)
 def p_vector_literal(p):
     """vector_literal : VEC NOT LBRACKET expression_list RBRACKET
@@ -215,6 +218,7 @@ def p_expression_list(p):
     else:
         p[0] = [p[1]]
 
+
 # ESTRUCTURAS DE DATOS - Paul Perdomo (Array)
 def p_array_literal(p):
     """array_literal : LBRACKET expression_list RBRACKET
@@ -230,7 +234,9 @@ def p_array_access(p):
     | array_access LBRACKET expression RBRACKET"""
     p[0] = ("array_access", p[1], p[3])
 
+
 # ESTRUCTURAS DE DATOS - Paul Perdomo (Tupla)
+
 
 def p_tuple_literal(p):
     """tuple_literal : LPAREN expression_list COMMA RPAREN
@@ -265,6 +271,7 @@ def p_print_args(p):
     | empty"""
     p[0] = p[1] if p[1] else []
 
+
 # ESTRUCTURAS DE CONTROL - IF/ELSE - Paul Perdomo
 def p_if_statement(p):
     """if_statement : IF expression block
@@ -275,7 +282,9 @@ def p_if_statement(p):
     else:
         p[0] = ("if", p[2], p[3], p[5])
 
+
 # ESTRUCTURAS DE CONTROL - WHILE - Paul Perdomo
+
 
 def p_while_statement(p):
     """while_statement : WHILE expression block"""
@@ -396,10 +405,20 @@ def p_empty(p):
     """empty :"""
     pass
 
+
 # MANEJO DE ERRORES SINTÁCTICOS - Anthony Herrera
 def p_error(p):
-    error_msg = f"Error de sintaxis en línea {p.lineno}, posición {p.lexpos}: token inesperado '{p.value}'"
+    # Calcular el número de línea real contando saltos de línea
+    lines_before = p.lexer.lexdata[: p.lexpos].count("\n")
+    line_number = lines_before + 1
+
+    # Encontrar la columna en la línea actual
+    line_start = p.lexer.lexdata.rfind("\n", 0, p.lexpos) + 1
+    column = p.lexpos - line_start + 1
+
+    error_msg = f"Error de sintaxis en línea {line_number}, columna {column}: token inesperado '{p.value}'"
     syntax_errors.append(error_msg)
+
     parser.errok()
 
 
