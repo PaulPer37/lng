@@ -24,7 +24,7 @@ import lexer as lexmod
 import parser as parsemod
 import utils
 
-ALG = "algoritmo1.rs"
+ALG = "algoritmo2.rs"
 
 
 def run_lexer_analysis(src, user):
