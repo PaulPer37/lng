@@ -88,18 +88,15 @@ def main():
     print(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     print("=" * 60)
 
-    # FASE 1: Análisis Léxico
     print("\n[FASE 1] Análisis Léxico")
     print("-" * 60)
     tokens, lex_errors = run_lexer_analysis(src, user)
     print(f"Tokens reconocidos: {len(tokens)}")
 
-    # FASE 2: Análisis Sintáctico
     print("\n[FASE 2] Análisis Sintáctico")
     print("-" * 60)
     ast, syntax_errors = run_parser_analysis(src, user)
 
-    # RESUMEN FINAL
     print("\n" + "=" * 60)
     print("RESUMEN DE ANÁLISIS")
     print("=" * 60)
@@ -111,5 +108,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # Ejecución normal del analizador completo
     main()
