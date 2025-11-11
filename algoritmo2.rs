@@ -2,7 +2,7 @@
 // Danilo Drouet - Calculadora
 
 fn sumar(a: i32, b: i32) -> i32 {
-    return a + b;
+    return a + b
 }
 
 fn restar(a: i32, b: i32) -> i32 {

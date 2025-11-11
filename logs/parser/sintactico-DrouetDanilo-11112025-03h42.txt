@@ -1,0 +1,26 @@
+=== LOG DE ANÁLISIS SINTÁCTICO ===
+Usuario: codespace
+Fecha: 11/11/2025
+Hora: 03:42:09
+Total de errores: 16
+==================================================
+
+1. Error de sintaxis en línea 6, columna 1: token inesperado '}'
+2. Error de sintaxis en línea 8, columna 1: token inesperado 'fn'
+3. Error de sintaxis en línea 8, columna 4: token inesperado 'restar'
+4. Error de sintaxis en línea 8, columna 12: token inesperado ':'
+5. Error de sintaxis en línea 8, columna 14: token inesperado 'i32'
+6. Error de sintaxis en línea 8, columna 20: token inesperado ':'
+7. Error de sintaxis en línea 8, columna 22: token inesperado 'i32'
+8. Error de sintaxis en línea 8, columna 27: token inesperado '->'
+9. Error de sintaxis en línea 8, columna 30: token inesperado 'i32'
+10. Error de sintaxis en línea 8, columna 34: token inesperado '{'
+11. Error de sintaxis en línea 9, columna 5: token inesperado 'return'
+12. Error de sintaxis en línea 9, columna 12: token inesperado 'a'
+13. Error de sintaxis en línea 17, columna 12: token inesperado '='
+14. Error de sintaxis en línea 19, columna 18: token inesperado ';'
+15. Error de sintaxis en línea 26, columna 9: token inesperado 'let'
+16. Error de sintaxis en línea 34, columna 13: token inesperado '!'
+
+==================================================
+Análisis completado exitosamente.
