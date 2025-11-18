@@ -93,58 +93,57 @@ def save_lexer_log(github_user, tokens, errors_text, source_file):
     return filename
 
 
-def save_semantic_log(user, errors, symbol_table, function_table):
+def save_semantic_log(github_user, errors, symbol_table, function_table):
     """
-    Guarda el log del análisis semántico
+    Guarda el log del análisis semántico con el formato especificado.
 
     Args:
-        user: nombre de usuario
-        errors: lista de errores semánticos
-        symbol_table: tabla de símbolos
-        function_table: tabla de funciones
+        github_user (str): Usuario de GitHub para el nombre del archivo
+        errors (list): Lista de errores semánticos
+        symbol_table (dict): Tabla de símbolos del análisis
+        function_table (dict): Tabla de funciones del análisis
 
     Returns:
-        str: ruta del archivo de log guardado
+        str: Ruta del archivo de log generado
     """
-    timestamp = datetime.now().strftime("%d%m%Y-%Hh%M")
-    filename = f"semantico-{user}-{timestamp}.txt"
-    logdir = os.path.join("logs/semantic")
-    os.makedirs(logdir, exist_ok=True)
+    logs_dir = "logs/semantic"
+    if not os.path.exists(logs_dir):
+        os.makedirs(logs_dir)
 
-    logpath = os.path.join(logdir, filename)
+    now = datetime.datetime.now()
+    filename = f"{logs_dir}/semantico-{github_user}-{now.strftime('%d%m%Y-%Hh%M')}.txt"
 
-    with open(logpath, "w", encoding="utf-8") as f:
-        f.write("=" * 60 + "\n")
-        f.write("ANÁLISIS SEMÁNTICO\n")
-        f.write("=" * 60 + "\n")
-        f.write(f"Usuario: {user}\n")
-        f.write(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
-        f.write("=" * 60 + "\n\n")
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(f"=== LOG DE ANÁLISIS SEMÁNTICO ===\n")
+        f.write(f"Usuario: {github_user}\n")
+        f.write(f"Fecha: {now.strftime('%d/%m/%Y')}\n")
+        f.write(f"Hora: {now.strftime('%H:%M:%S')}\n")
+        f.write(f"Total de errores: {len(errors)}\n")
+        f.write(f"=" * 50 + "\n\n")
 
         if errors:
-            f.write(f"ERRORES SEMÁNTICOS ENCONTRADOS ({len(errors)}):\n")
-            f.write("-" * 60 + "\n")
-            for error in errors:
-                f.write(f"{error}\n")
+            for i, error in enumerate(errors, 1):
+                f.write(f"{i}. {error}\n")
         else:
-            f.write("✓ Sin errores semánticos\n\n")
+            f.write("✓ No se encontraron errores semánticos.\n\n")
 
-            f.write("TABLA DE SÍMBOLOS:\n")
-            f.write("-" * 60 + "\n")
+            f.write("TABLA DE SÍMBOLOS\n")
+            f.write("-" * 50 + "\n")
             if symbol_table:
                 for var, info in symbol_table.items():
-                    f.write(f"{var:20} → {info}\n")
+                    f.write(f"  {var}: {info}\n")
             else:
-                f.write("(vacía)\n")
+                f.write("  (vacía)\n")
 
-            f.write("\nTABLA DE FUNCIONES:\n")
-            f.write("-" * 60 + "\n")
+            f.write("\nTABLA DE FUNCIONES\n")
+            f.write("-" * 50 + "\n")
             if function_table:
                 for func, info in function_table.items():
-                    f.write(f"{func:20} → {info}\n")
+                    f.write(f"  {func}: {info}\n")
             else:
-                f.write("(vacía)\n")
+                f.write("  (vacía)\n")
 
-        f.write("\n" + "=" * 60 + "\n")
+        f.write("\n" + "=" * 50 + "\n")
+        f.write("Análisis completado exitosamente.\n")
 
-    return logpath
+    return filename

@@ -99,11 +99,11 @@ def run_semantic_analysis(ast, user):
 
 
 def main():
-    if not os.path.isfile("test/semantic/semantic-algorithm-1.rs"):
-        print(f"Test file not found: {"test/semantic/semantic-algorithm-1.rs"}")
+    if not os.path.isfile(ALG):
+        print(f"Test file not found: {ALG}")
         return
 
-    with open("test/semantic/semantic-algorithm-1.rs", "r", encoding="utf-8") as f:
+    with open(ALG, "r", encoding="utf-8") as f:
         src = f.read()
 
     user = getpass.getuser() or "anon"
@@ -112,7 +112,7 @@ def main():
     print("=" * 60)
     print("RUST ANALYZER - COMPILADOR")
     print("=" * 60)
-    print(f"Archivo: {"test/semantic/semantic-algorithm-1.rs"}")
+    print(f"Archivo: {ALG}")
     print(f"Usuario: {user}")
     print(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
     print("=" * 60)
@@ -126,15 +126,10 @@ def main():
     print("-" * 60)
     ast, syntax_errors = run_parser_analysis(src, user)
 
-    semantic_errors = []
-    if not syntax_errors and ast:
-        print("\n[FASE 3] Análisis Semántico")
-        print("-" * 60)
-        semantic_errors = run_semantic_analysis(ast, user)
-    else:
-        print("\n[FASE 3] Análisis Semántico")
-        print("-" * 60)
-        print("⚠ Análisis semántico omitido debido a errores sintácticos")
+    print("\n[FASE 3] Análisis Semántico")
+    print("-" * 60)
+
+    analysis_errors = run_semantic_analysis(ast, user)
 
     print("\n" + "=" * 60)
     print("RESUMEN DE ANÁLISIS")
@@ -142,16 +137,10 @@ def main():
     print(f"Tokens léxicos: {len(tokens)}")
     print(f"Errores léxicos: {'Sí' if lex_errors.strip() else 'No'}")
     print(f"Errores sintácticos: {len(syntax_errors)}")
-    print(
-        f"Errores semánticos: {len(semantic_errors) if not syntax_errors else 'No analizado'}"
-    )
     print(f"AST generado: {'Sí' if ast and not syntax_errors else 'No'}")
-
-    # if not lex_errors.strip() and not syntax_errors and not semantic_errors:
-    #     print("\n✅ ¡CÓDIGO VÁLIDO! Sin errores detectados.")
-
+    print(f"Errores semánticos: {len(analysis_errors)}")
     print("=" * 60)
 
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     main()
