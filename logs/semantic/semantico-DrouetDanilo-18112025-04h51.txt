@@ -1,0 +1,20 @@
+=== LOG DE ANÁLISIS SEMÁNTICO ===
+Usuario: DrouetDanilo
+Fecha: 18/11/2025
+Hora: 04:51:59
+Total de errores: 10
+==================================================
+
+1. Línea 0: Variable 'precio' no ha sido declarada
+2. Línea 0: No se puede asignar a 'contador': variable no es mutable (use 'mut')
+3. Línea 0: Tipo incompatible: se esperaba 'i32' pero se obtuvo 'f64'
+4. Línea 0: Condición en 'if' debe ser booleana, se obtuvo 'i32'
+5. Línea 0: Función 'calcular' no ha sido declarada
+6. Línea 0: Tipo inconsistente en array: elementos tienen tipos diferentes ('i32' y 'f64')
+7. Línea 0: Índice de array debe ser entero (i32), se obtuvo 'f64'
+8. Línea 0: 'break' solo puede usarse dentro de un loop
+9. Línea 0: Función 'sumar' espera 2 argumentos, se recibieron 1
+10. Línea 0: Tipo de retorno incorrecto: se esperaba 'i32', se obtuvo 'f64'
+
+==================================================
+Análisis completado exitosamente.

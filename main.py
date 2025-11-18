@@ -89,7 +89,7 @@ def main():
     # ==========================================
     # CONFIGURACIÓN DE RUTAS (Dinámico)
     # ==========================================
-    NOMBRE_ARCHIVO = "algoritmo3.rs"
+    NOMBRE_ARCHIVO = "semantic-algorithm-2.rs"
     
     # 1. Directorio base (donde está main.py)
     DIR_ACTUAL = os.path.dirname(os.path.abspath(__file__))
