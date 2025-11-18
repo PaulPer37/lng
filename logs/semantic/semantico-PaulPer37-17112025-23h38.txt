@@ -1,0 +1,11 @@
+=== LOG DE ANÁLISIS SEMÁNTICO ===
+Usuario: PaulPer37
+Fecha: 17/11/2025
+Hora: 23:38:04
+Total de errores: 1
+==================================================
+
+1. Línea 0: Tipo de retorno incorrecto: se esperaba 'i32', se obtuvo 'char'
+
+==================================================
+Análisis completado exitosamente.

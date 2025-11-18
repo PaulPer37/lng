@@ -7,25 +7,29 @@ import os
 import datetime
 
 
-def save_syntax_log(github_user, errors):
+def save_syntax_log(github_user, errors, output_dir):
     """
     Guarda los errores sintácticos en un archivo de log con el formato especificado.
 
     Args:
         github_user (str): Usuario de GitHub para el nombre del archivo
         errors (list): Lista de mensajes de error
+        output_dir (str): Ruta base donde guardar los logs
 
     Returns:
         str: Ruta del archivo de log generado
     """
-    logs_dir = "logs/parser"
+    # Crear subcarpeta específica dentro del directorio de logs recibido
+    logs_dir = os.path.join(output_dir, "parser")
+    
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
     now = datetime.datetime.now()
-    filename = f"{logs_dir}/sintactico-{github_user}-{now.strftime('%d%m%Y-%Hh%M')}.txt"
+    filename = f"sintactico-{github_user}-{now.strftime('%d%m%Y-%Hh%M')}.txt"
+    full_path = os.path.join(logs_dir, filename)
 
-    with open(filename, "w", encoding="utf-8") as f:
+    with open(full_path, "w", encoding="utf-8") as f:
         f.write(f"=== LOG DE ANÁLISIS SINTÁCTICO ===\n")
         f.write(f"Usuario: {github_user}\n")
         f.write(f"Fecha: {now.strftime('%d/%m/%Y')}\n")
@@ -42,30 +46,33 @@ def save_syntax_log(github_user, errors):
         f.write("\n" + "=" * 50 + "\n")
         f.write("Análisis completado exitosamente.\n")
 
-    return filename
+    return full_path
 
 
-def save_lexer_log(github_user, tokens, errors_text, source_file):
+def save_lexer_log(github_user, tokens, errors_text, source_file, output_dir):
     """
     Guarda el log del análisis léxico.
 
     Args:
-        github_user (str): Usuario de GitHub para el nombre del archivo
+        github_user (str): Usuario de GitHub
         tokens (list): Lista de tokens reconocidos
         errors_text (str): Texto de errores capturados
-        source_file (str): Nombre del archivo fuente analizado
+        source_file (str): Nombre del archivo fuente
+        output_dir (str): Ruta base donde guardar los logs
 
     Returns:
         str: Ruta del archivo de log generado
     """
-    logs_dir = "logs/lexer"
+    logs_dir = os.path.join(output_dir, "lexer")
+    
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
     now = datetime.datetime.now()
-    filename = f"{logs_dir}/lexico-{github_user}-{now.day:02d}-{now.month:02d}-{now.year}-{now.hour:02d}h{now.minute:02d}.txt"
+    filename = f"lexico-{github_user}-{now.day:02d}-{now.month:02d}-{now.year}-{now.hour:02d}h{now.minute:02d}.txt"
+    full_path = os.path.join(logs_dir, filename)
 
-    with open(filename, "w", encoding="utf-8") as f:
+    with open(full_path, "w", encoding="utf-8") as f:
         f.write(f"LEXICO LOG - file: {source_file}\n")
         f.write(f"Generated: {now.isoformat()}\n")
         f.write(f"User: {github_user}\n")
@@ -90,30 +97,33 @@ def save_lexer_log(github_user, tokens, errors_text, source_file):
         else:
             f.write("No errors reported by lexer (t_error did not print anything).\n")
 
-    return filename
+    return full_path
 
 
-def save_semantic_log(github_user, errors, symbol_table, function_table):
+def save_semantic_log(github_user, errors, symbol_table, function_table, output_dir):
     """
     Guarda el log del análisis semántico con el formato especificado.
 
     Args:
-        github_user (str): Usuario de GitHub para el nombre del archivo
+        github_user (str): Usuario de GitHub
         errors (list): Lista de errores semánticos
         symbol_table (dict): Tabla de símbolos del análisis
         function_table (dict): Tabla de funciones del análisis
+        output_dir (str): Ruta base donde guardar los logs
 
     Returns:
         str: Ruta del archivo de log generado
     """
-    logs_dir = "logs/semantic"
+    logs_dir = os.path.join(output_dir, "semantic")
+    
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
     now = datetime.datetime.now()
-    filename = f"{logs_dir}/semantico-{github_user}-{now.strftime('%d%m%Y-%Hh%M')}.txt"
+    filename = f"semantico-{github_user}-{now.strftime('%d%m%Y-%Hh%M')}.txt"
+    full_path = os.path.join(logs_dir, filename)
 
-    with open(filename, "w", encoding="utf-8") as f:
+    with open(full_path, "w", encoding="utf-8") as f:
         f.write(f"=== LOG DE ANÁLISIS SEMÁNTICO ===\n")
         f.write(f"Usuario: {github_user}\n")
         f.write(f"Fecha: {now.strftime('%d/%m/%Y')}\n")
@@ -146,4 +156,4 @@ def save_semantic_log(github_user, errors, symbol_table, function_table):
         f.write("\n" + "=" * 50 + "\n")
         f.write("Análisis completado exitosamente.\n")
 
-    return filename
+    return full_path
