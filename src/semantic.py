@@ -1,3 +1,103 @@
+# semantic.py
+# Analizador Semántico - Proyecto Compiladores
+
+# Lista para almacenar errores semánticos
+semantic_errors = []
+
+# Tabla de símbolos global
+symbol_table = {}
+function_table = {}
+
+# Contexto actual (para saber si estamos en loop, función, etc.)
+context = {
+    'in_loop': False,
+    'in_function': None,  # None o nombre de la función actual
+    'return_type': None   # Tipo de retorno esperado
+}
+
+
+# ============================================================================
+# UTILIDADES COMPARTIDAS
+# ============================================================================
+def add_error(line, message):
+    """Agrega un error semántico a la lista"""
+    error = f"Línea {line}: {message}"
+    semantic_errors.append(error)
+    print(f"❌ {error}")
+
+
+def get_expression_type(node):
+    """Retorna el tipo de una expresión del AST"""
+    if isinstance(node, tuple):
+        if node[0] == "literal":
+            value = node[1]
+            if isinstance(value, bool):
+                return "bool"
+            elif isinstance(value, int):
+                return "i32"
+            elif isinstance(value, float):
+                return "f64"
+            elif isinstance(value, str):
+                if len(value) == 1:
+                    return "char"
+                return "String"
+        elif node[0] == "binop":
+            # Operadores aritméticos retornan el tipo de los operandos
+            # Operadores booleanos retornan bool
+            operator = node[1]
+            if operator in ['+', '-', '*', '/', '%']:
+                return get_expression_type(node[2])  # Tipo del operando izquierdo
+            elif operator in ['==', '!=', '<', '>', '<=', '>=', '&&', '||']:
+                return "bool"
+        elif node[0] == "unop":
+            if node[1] == '!':
+                return "bool"
+        # Agregar más casos según sea necesario
+    return None
+
+
+# ============================================================================
+# ANÁLISIS SEMÁNTICO - Paul Perdomo
+# ============================================================================
+
+def check_data_structures(node, line=0):
+    # Paul Perdomo: Vectores y Arrays
+    if node[0] == "vector" or node[0] == "array":
+        elements = node[1]
+        if len(elements) > 0:
+            first_type = get_expression_type(elements[0])
+            for i, elem in enumerate(elements[1:], 1):
+                elem_type = get_expression_type(elem)
+                if elem_type and first_type and elem_type != first_type:
+                    add_error(line, f"Tipo inconsistente en {'vector' if node[0] == 'vector' else 'array'}: elemento {i} es '{elem_type}', se esperaba '{first_type}'")
+    
+    # Paul Perdomo: Acceso a Arrays
+    elif node[0] == "array_access":
+        array_name = node[1]
+        index = node[2]
+        
+        if isinstance(array_name, str):
+            check_variable_usage(array_name, line)
+        
+        index_type = get_expression_type(index)
+        if index_type and index_type != "i32":
+            add_error(line, f"Índice de array debe ser entero (i32), se obtuvo '{index_type}'")
+    
+    # Paul Perdomo: Acceso a Tuplas
+    elif node[0] == "tuple_access":
+        tuple_name = node[1]
+        index = node[2]
+        check_variable_usage(tuple_name, line)
+
+
+def check_boolean_conditions(node, line=0):
+    # Paul Perdomo: Validar condiciones en if/while
+    if node[0] in ["if", "while"]:
+        condition = node[1]
+        condition_type = get_expression_type(condition)
+        
+        if condition_type and condition_type != "bool":
+            add_error(line, f"Condición en '{node[0]}' debe ser booleana, se obtuvo '{condition_type}'")
 
 
 # ============================================================================
@@ -140,7 +240,7 @@ def analyze_node(node, line=0):
     elif node_type in ["return", "break", "continue"]:
         check_control_flow(node, line)
     
-    # For loops (Paul)
+    # For loops (Paul Perdomo)
     elif node_type == "for":
         old_in_loop = context['in_loop']
         context['in_loop'] = True
