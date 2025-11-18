@@ -18,6 +18,7 @@ import parser as parsemod
 import semantic as semmod
 import utils
 
+
 def run_lexer_analysis(src, user, filename, logs_path):
     """Ejecuta análisis léxico y genera log en la carpeta logs_path"""
     lexmod.lexer.lineno = 1
@@ -30,7 +31,9 @@ def run_lexer_analysis(src, user, filename, logs_path):
             tokens.append(tok)
 
     # Pasamos logs_path a la utilidad
-    logpath = utils.save_lexer_log(user, tokens, err_capture.getvalue(), filename, logs_path)
+    logpath = utils.save_lexer_log(
+        user, tokens, err_capture.getvalue(), filename, logs_path
+    )
     print(f"✓ Lexer log escrito en: {logpath}")
 
     return tokens, err_capture.getvalue()
@@ -89,18 +92,18 @@ def main():
     # ==========================================
     # CONFIGURACIÓN DE RUTAS (Dinámico)
     # ==========================================
-    NOMBRE_ARCHIVO = "semantic-algorithm-2.rs"
-    
+    NOMBRE_ARCHIVO = "semantic-algorithm-1.rs"
+
     # 1. Directorio base (donde está main.py)
     DIR_ACTUAL = os.path.dirname(os.path.abspath(__file__))
-    
+
     # 2. Ruta del archivo de entrada (en carpeta test/semantic vecina a main)
     ruta_entrada = os.path.join(DIR_ACTUAL, "test", "semantic", NOMBRE_ARCHIVO)
     ruta_entrada = os.path.normpath(ruta_entrada)
 
     # 3. Ruta de la carpeta de LOGS (vecina a main)
     ruta_logs = os.path.join(DIR_ACTUAL, "logs")
-    
+
     # Crear carpeta logs si no existe
     if not os.path.exists(ruta_logs):
         try:
@@ -165,8 +168,11 @@ def main():
     print("=" * 60)
     print(f"Tokens léxicos: {len(tokens)}")
     print(f"Errores sintácticos: {len(syntax_errors)}")
-    print(f"Errores semánticos: {len(semantic_errors) if not syntax_errors else 'No analizado'}")
+    print(
+        f"Errores semánticos: {len(semantic_errors) if not syntax_errors else 'No analizado'}"
+    )
     print("=" * 60)
+
 
 if __name__ == "__main__":
     main()

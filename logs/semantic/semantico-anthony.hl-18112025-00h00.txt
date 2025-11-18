@@ -1,0 +1,24 @@
+=== LOG DE ANÁLISIS SEMÁNTICO ===
+Usuario: anthony.hl
+Fecha: 18/11/2025
+Hora: 00:00:02
+Total de errores: 14
+==================================================
+
+1. Línea 0: Variable 'x' no ha sido declarada
+2. Línea 0: No se puede asignar a 'y': variable no es mutable (use 'mut')
+3. Línea 0: Variable 'true' no ha sido declarada
+4. Línea 0: Variable 'z' no ha sido declarada
+5. Línea 0: Función 'sumar' no ha sido declarada
+6. Línea 0: Tipo inconsistente en array: elementos tienen tipos diferentes ('i32' y 'f64')
+7. Línea 0: Condición en 'if' debe ser booleana, se obtuvo 'i32'
+8. Línea 0: Índice de array debe ser entero (i32), se obtuvo 'f64'
+9. Línea 0: Función 'multiplicar' espera 2 argumentos, se recibieron 1
+10. Línea 0: Variable 'hola' no ha sido declarada
+11. Línea 0: 'return' solo puede usarse dentro de una función
+12. Línea 0: 'break' solo puede usarse dentro de un loop
+13. Línea 0: Tipo de retorno incorrecto: se esperaba 'i32', se obtuvo 'f64'
+14. Línea 0: Variable 'resultado' ya fue declarada previamente
+
+==================================================
+Análisis completado exitosamente.

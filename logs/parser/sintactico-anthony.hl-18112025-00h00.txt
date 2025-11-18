@@ -1,0 +1,11 @@
+=== LOG DE ANÁLISIS SINTÁCTICO ===
+Usuario: anthony.hl
+Fecha: 18/11/2025
+Hora: 00:00:02
+Total de errores: 0
+==================================================
+
+✓ No se encontraron errores sintácticos.
+
+==================================================
+Análisis completado exitosamente.
