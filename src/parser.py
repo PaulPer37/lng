@@ -408,16 +408,20 @@ def p_empty(p):
 
 # MANEJO DE ERRORES SINTÁCTICOS - Anthony Herrera
 def p_error(p):
-    # Calcular el número de línea real contando saltos de línea
-    lines_before = p.lexer.lexdata[: p.lexpos].count("\n")
-    line_number = lines_before + 1
+    if p:
+        # Calcular el número de línea real contando saltos de línea
+        lines_before = p.lexer.lexdata[: p.lexpos].count("\n")
+        line_number = lines_before + 1
 
-    # Encontrar la columna en la línea actual
-    line_start = p.lexer.lexdata.rfind("\n", 0, p.lexpos) + 1
-    column = p.lexpos - line_start + 1
+        # Encontrar la columna en la línea actual
+        line_start = p.lexer.lexdata.rfind("\n", 0, p.lexpos) + 1
+        column = p.lexpos - line_start + 1
 
-    error_msg = f"Error de sintaxis en línea {line_number}, columna {column}: token inesperado '{p.value}'"
-    syntax_errors.append(error_msg)
+        error_msg = f"Error de sintaxis en línea {line_number}, columna {column}: token inesperado '{p.value}'"
+        syntax_errors.append(error_msg)
+    else:
+        error_msg = "Error de sintaxis: fin de archivo inesperado"
+        syntax_errors.append(error_msg)
 
     parser.errok()
 
