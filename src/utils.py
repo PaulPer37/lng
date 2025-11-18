@@ -91,3 +91,58 @@ def save_lexer_log(github_user, tokens, errors_text, source_file):
             f.write("No errors reported by lexer (t_error did not print anything).\n")
 
     return filename
+def save_semantic_log(user, errors, symbol_table, function_table):
+    """
+    Guarda el log del análisis semántico
+    
+    Args:
+        user: nombre de usuario
+        errors: lista de errores semánticos
+        symbol_table: tabla de símbolos
+        function_table: tabla de funciones
+    
+    Returns:
+        str: ruta del archivo de log guardado
+    """
+    timestamp = datetime.now().strftime("%d%m%Y-%Hh%M")
+    filename = f"semantico-{user}-{timestamp}.txt"
+    logdir = os.path.join(HERE, "..", "logs", "semantic")
+    os.makedirs(logdir, exist_ok=True)
+    
+    logpath = os.path.join(logdir, filename)
+    
+    with open(logpath, "w", encoding="utf-8") as f:
+        f.write("=" * 60 + "\n")
+        f.write("ANÁLISIS SEMÁNTICO\n")
+        f.write("=" * 60 + "\n")
+        f.write(f"Usuario: {user}\n")
+        f.write(f"Fecha: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}\n")
+        f.write("=" * 60 + "\n\n")
+        
+        if errors:
+            f.write(f"ERRORES SEMÁNTICOS ENCONTRADOS ({len(errors)}):\n")
+            f.write("-" * 60 + "\n")
+            for error in errors:
+                f.write(f"{error}\n")
+        else:
+            f.write("✓ Sin errores semánticos\n\n")
+            
+            f.write("TABLA DE SÍMBOLOS:\n")
+            f.write("-" * 60 + "\n")
+            if symbol_table:
+                for var, info in symbol_table.items():
+                    f.write(f"{var:20} → {info}\n")
+            else:
+                f.write("(vacía)\n")
+            
+            f.write("\nTABLA DE FUNCIONES:\n")
+            f.write("-" * 60 + "\n")
+            if function_table:
+                for func, info in function_table.items():
+                    f.write(f"{func:20} → {info}\n")
+            else:
+                f.write("(vacía)\n")
+        
+        f.write("\n" + "=" * 60 + "\n")
+    
+    return logpath

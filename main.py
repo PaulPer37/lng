@@ -1,12 +1,3 @@
-"""
-Main entry point for the Rust Analyzer.
-
-This file manages the execution of the three modules:
-- Lexical Analysis (src/lexer.py)
-- Syntactic Analysis (src/parser.py)
-- Semantic Analysis (src/semantic.py)
-"""
-
 import os
 import sys
 from datetime import datetime
@@ -14,7 +5,7 @@ import getpass
 import contextlib
 from io import StringIO
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+HERE = os.path.dirname(os.path.abspath(_file_))
 SRC = os.path.join(HERE, "src")
 
 if SRC not in sys.path:
@@ -22,6 +13,7 @@ if SRC not in sys.path:
 
 import lexer as lexmod
 import parser as parsemod
+import semantic as semmod  # ← NUEVO
 import utils
 
 ALG = "algoritmo2.rs"
@@ -69,6 +61,32 @@ def run_parser_analysis(src, user):
     return ast, errors
 
 
+def run_semantic_analysis(ast, user):
+    """Ejecuta análisis semántico y genera log"""
+    print("\n" + "=" * 60)
+    print("INICIANDO ANÁLISIS SEMÁNTICO")
+    print("=" * 60)
+
+    errors = semmod.analyze(ast)
+
+    # Guardar log usando utilidad centralizada
+    logpath = utils.save_semantic_log(user, errors, semmod.symbol_table, semmod.function_table)
+
+    if not errors:
+        print("✓ Análisis semántico completado sin errores")
+        print(f"\nVariables declaradas: {len(semmod.symbol_table)}")
+        print(f"Funciones declaradas: {len(semmod.function_table)}")
+    else:
+        print(f"✗ Se encontraron {len(errors)} errores semánticos")
+        for err in errors[:5]:  # Mostrar solo los primeros 5
+            print(f"  - {err}")
+        if len(errors) > 5:
+            print(f"  ... y {len(errors) - 5} errores más")
+
+    print(f"\n✓ Semantic log written: {logpath}")
+    return errors
+
+
 def main():
     if not os.path.isfile(ALG):
         print(f"Test file not found: {ALG}")
@@ -97,15 +115,33 @@ def main():
     print("-" * 60)
     ast, syntax_errors = run_parser_analysis(src, user)
 
+    # ========================================================================
+    # NUEVA FASE 3: ANÁLISIS SEMÁNTICO
+    # ========================================================================
+    semantic_errors = []
+    if not syntax_errors and ast:
+        print("\n[FASE 3] Análisis Semántico")
+        print("-" * 60)
+        semantic_errors = run_semantic_analysis(ast, user)
+    else:
+        print("\n[FASE 3] Análisis Semántico")
+        print("-" * 60)
+        print("⚠ Análisis semántico omitido debido a errores sintácticos")
+
     print("\n" + "=" * 60)
     print("RESUMEN DE ANÁLISIS")
     print("=" * 60)
     print(f"Tokens léxicos: {len(tokens)}")
     print(f"Errores léxicos: {'Sí' if lex_errors.strip() else 'No'}")
     print(f"Errores sintácticos: {len(syntax_errors)}")
+    print(f"Errores semánticos: {len(semantic_errors) if not syntax_errors else 'No analizado'}")
     print(f"AST generado: {'Sí' if ast and not syntax_errors else 'No'}")
+    
+    if not lex_errors.strip() and not syntax_errors and not semantic_errors:
+        print("\n✅ ¡CÓDIGO VÁLIDO! Sin errores detectados.")
+    
     print("=" * 60)
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
