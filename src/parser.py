@@ -58,39 +58,41 @@ def p_variable_declaration(p):
     | LET ID COLON type_annotation ASSIGN expression SEMICOLON
     | LET MUT ID COLON type_annotation ASSIGN expression SEMICOLON"""
 
+    line = p.lineno(1)  # Obtener número de línea del token LET
+    
     # let x;
     if len(p) == 4:
-        p[0] = ("var_decl", p[2], None, None, False)
+        p[0] = ("var_decl", p[2], None, None, False, line)
 
     # let mut x;
     elif len(p) == 5:
-        p[0] = ("var_decl", p[3], None, None, True)
+        p[0] = ("var_decl", p[3], None, None, True, line)
 
     # let x = expr; O let x: tipo;
     elif len(p) == 6:
         if p[3] == ":":
             # let x: tipo;
-            p[0] = ("var_decl", p[2], p[4], None, False)
+            p[0] = ("var_decl", p[2], p[4], None, False, line)
         else:
             # let x = expr;
-            p[0] = ("var_decl", p[2], None, p[4], False)
+            p[0] = ("var_decl", p[2], None, p[4], False, line)
 
     # let mut x = expr; O let mut x: tipo;
     elif len(p) == 7:
         if p[4] == ":":
             # let mut x: tipo;
-            p[0] = ("var_decl", p[3], p[5], None, True)
+            p[0] = ("var_decl", p[3], p[5], None, True, line)
         else:
             # let mut x = expr;
-            p[0] = ("var_decl", p[3], None, p[5], True)
+            p[0] = ("var_decl", p[3], None, p[5], True, line)
 
     # let x: tipo = expr;
     elif len(p) == 8:
-        p[0] = ("var_decl", p[2], p[4], p[6], False)
+        p[0] = ("var_decl", p[2], p[4], p[6], False, line)
 
     # let mut x: tipo = expr;
     else:  # len(p) == 9
-        p[0] = ("var_decl", p[3], p[5], p[7], True)
+        p[0] = ("var_decl", p[3], p[5], p[7], True, line)
 
 
 def p_type_annotation(p):
@@ -135,12 +137,14 @@ def p_assignment(p):
     | ID MOD_ASSIGN expression SEMICOLON
     | array_access ASSIGN expression SEMICOLON"""
 
+    line = p.lineno(1)  # Línea del ID o array_access
+    
     if len(p) == 5:
         # Distinguir entre asignación a variable o array
         if isinstance(p[1], str):
-            p[0] = ("assign", p[1], p[2], p[3])
+            p[0] = ("assign", p[1], p[2], p[3], line)
         else:
-            p[0] = ("assign_index", p[1], p[3])
+            p[0] = ("assign_index", p[1], p[3], line)
 
 
 # EXPRESIONES ARITMÉTICAS - Anthony Herrera
@@ -204,10 +208,11 @@ def p_expression_statement(p):
 def p_vector_literal(p):
     """vector_literal : VEC NOT LBRACKET expression_list RBRACKET
     | VEC NOT LBRACKET RBRACKET"""
+    line = p.lineno(1)
     if len(p) == 6:
-        p[0] = ("vector", p[4])
+        p[0] = ("vector", p[4], line)
     else:
-        p[0] = ("vector", [])
+        p[0] = ("vector", [], line)
 
 
 def p_expression_list(p):
@@ -223,33 +228,35 @@ def p_expression_list(p):
 def p_array_literal(p):
     """array_literal : LBRACKET expression_list RBRACKET
     | LBRACKET RBRACKET"""
+    line = p.lineno(1)
     if len(p) == 4:
-        p[0] = ("array", p[2])
+        p[0] = ("array", p[2], line)
     else:
-        p[0] = ("array", [])
+        p[0] = ("array", [], line)
 
 
 def p_array_access(p):
     """array_access : ID LBRACKET expression RBRACKET
     | array_access LBRACKET expression RBRACKET"""
-    p[0] = ("array_access", p[1], p[3])
+    line = p.lineno(2)  # Línea del LBRACKET
+    p[0] = ("array_access", p[1], p[3], line)
 
 
 # ESTRUCTURAS DE DATOS - Paul Perdomo (Tupla)
-
-
 def p_tuple_literal(p):
     """tuple_literal : LPAREN expression_list COMMA RPAREN
     | LPAREN expression COMMA expression RPAREN"""
+    line = p.lineno(1)
     if len(p) == 5:
-        p[0] = ("tuple", p[2])
+        p[0] = ("tuple", p[2], line)
     else:
-        p[0] = ("tuple", [p[2], p[4]])
+        p[0] = ("tuple", [p[2], p[4]], line)
 
 
 def p_tuple_access(p):
     """tuple_access : ID PERIOD INTEGER"""
-    p[0] = ("tuple_access", p[1], p[3])
+    line = p.lineno(1)
+    p[0] = ("tuple_access", p[1], p[3], line)
 
 
 # IMPRESIÓN - Paul Perdomo
@@ -258,12 +265,13 @@ def p_print_statement(p):
     | PRINTLN NOT LPAREN print_args RPAREN SEMICOLON
     | PRINT LPAREN print_args RPAREN SEMICOLON
     | PRINTLN LPAREN print_args RPAREN SEMICOLON"""
+    line = p.lineno(1)
     if len(p) == 7:
         # Con NOT (!) - es macro de Rust
-        p[0] = ("print", p[1], p[4], True)
+        p[0] = ("print", p[1], p[4], True, line)
     else:
         # Sin NOT - es función normal
-        p[0] = ("print", p[1], p[3], False)
+        p[0] = ("print", p[1], p[3], False, line)
 
 
 def p_print_args(p):
@@ -277,26 +285,26 @@ def p_if_statement(p):
     """if_statement : IF expression block
     | IF expression block ELSE block
     | IF expression block ELSE if_statement"""
+    line = p.lineno(1)
     if len(p) == 4:
-        p[0] = ("if", p[2], p[3], None)
+        p[0] = ("if", p[2], p[3], None, line)
     else:
-        p[0] = ("if", p[2], p[3], p[5])
+        p[0] = ("if", p[2], p[3], p[5], line)
 
 
 # ESTRUCTURAS DE CONTROL - WHILE - Paul Perdomo
-
-
 def p_while_statement(p):
     """while_statement : WHILE expression block"""
-    p[0] = ("while", p[2], p[3])
+    line = p.lineno(1)
+    p[0] = ("while", p[2], p[3], line)
 
 
 # ESTRUCTURAS DE CONTROL - FOR - Danilo Drouet
-# ============================================================================
 def p_for_statement(p):
     """for_statement : FOR ID IN range_expression block
     | FOR ID IN expression block"""
-    p[0] = ("for", p[2], p[4], p[5])
+    line = p.lineno(1)
+    p[0] = ("for", p[2], p[4], p[5], line)
 
 
 def p_range_expression(p):
@@ -304,9 +312,7 @@ def p_range_expression(p):
     p[0] = ("range", p[1], p[4])
 
 
-# ============================================================================
 # BLOQUE DE CÓDIGO - Danilo Drouet
-# ============================================================================
 def p_block(p):
     """block : LBRACE statement_list RBRACE
     | LBRACE RBRACE"""
@@ -316,30 +322,30 @@ def p_block(p):
         p[0] = ("block", [])
 
 
-# ============================================================================
 # DECLARACIÓN DE FUNCIONES - Danilo Drouet
-# ============================================================================
 def p_function_declaration(p):
     """function_declaration : FN ID LPAREN parameter_list RPAREN block
     | FN ID LPAREN parameter_list RPAREN ARROW type_annotation block
     | FN ID LPAREN RPAREN block
     | FN ID LPAREN RPAREN ARROW type_annotation block"""
 
-    # fn name() { ... } - 6 elementos: FN ID ( ) block
+    line = p.lineno(1)  # Línea del token FN
+    
+    # fn name() { ... }
     if len(p) == 6:
-        p[0] = ("func_decl", p[2], [], None, p[5])
+        p[0] = ("func_decl", p[2], [], None, p[5], line)
 
-    # fn name(params) { ... } - 7 elementos: FN ID ( params ) block
+    # fn name(params) { ... }
     elif len(p) == 7:
-        p[0] = ("func_decl", p[2], p[4], None, p[6])
+        p[0] = ("func_decl", p[2], p[4], None, p[6], line)
 
-    # fn name() -> type { ... } - 8 elementos: FN ID ( ) -> type block
+    # fn name() -> type { ... }
     elif len(p) == 8:
-        p[0] = ("func_decl", p[2], [], p[6], p[7])
+        p[0] = ("func_decl", p[2], [], p[6], p[7], line)
 
-    # fn name(params) -> type { ... } - 9 elementos: FN ID ( params ) -> type block
+    # fn name(params) -> type { ... }
     else:  # len(p) == 9
-        p[0] = ("func_decl", p[2], p[4], p[7], p[8])
+        p[0] = ("func_decl", p[2], p[4], p[7], p[8], line)
 
 
 def p_parameter_list(p):
@@ -356,16 +362,15 @@ def p_parameter(p):
     p[0] = ("param", p[1], p[3])
 
 
-# ============================================================================
 # LLAMADA A FUNCIÓN - Danilo Drouet
-# ============================================================================
 def p_function_call(p):
     """function_call : ID LPAREN argument_list RPAREN
     | ID LPAREN RPAREN"""
+    line = p.lineno(1)
     if len(p) == 5:
-        p[0] = ("func_call", p[1], p[3])
+        p[0] = ("func_call", p[1], p[3], line)
     else:
-        p[0] = ("func_call", p[1], [])
+        p[0] = ("func_call", p[1], [], line)
 
 
 def p_argument_list(p):
@@ -373,34 +378,31 @@ def p_argument_list(p):
     p[0] = p[1]
 
 
-# ============================================================================
 # RETURN - Danilo Drouet
-# ============================================================================
 def p_return_statement(p):
     """return_statement : RETURN expression SEMICOLON
     | RETURN SEMICOLON"""
+    line = p.lineno(1)
     if len(p) == 4:
-        p[0] = ("return", p[2])
+        p[0] = ("return", p[2], line)
     else:
-        p[0] = ("return", None)
+        p[0] = ("return", None, line)
 
 
-# ============================================================================
 # BREAK Y CONTINUE - Danilo Drouet
-# ============================================================================
 def p_break_statement(p):
     """break_statement : BREAK SEMICOLON"""
-    p[0] = ("break",)
+    line = p.lineno(1)
+    p[0] = ("break", line)
 
 
 def p_continue_statement(p):
     """continue_statement : CONTINUE SEMICOLON"""
-    p[0] = ("continue",)
+    line = p.lineno(1)
+    p[0] = ("continue", line)
 
 
-# ============================================================================
 # REGLA VACÍA - Danilo Drouet
-# ============================================================================
 def p_empty(p):
     """empty :"""
     pass
